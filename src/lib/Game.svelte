@@ -11,8 +11,33 @@
   function posEqual(a: Pos, b: Pos): boolean {
     return a.x == b.x && a.y == b.y;
   }
+
+  type Dir = "up" | "left" | "right" | "down";
+  const MAX_X = 20;
+  const MAX_Y = 20;
+
+  function movePos(cur: Pos, dir: Dir): Pos {
+    let newPos = {
+      x: dir === "right" ? cur.x + 1 : dir === "left" ? cur.x - 1 : cur.x,
+      y: dir === "up" ? cur.y - 1 : dir === "down" ? cur.y + 1 : cur.y,
+    };
+    if (newPos.x < 0 || newPos.y < 0 || newPos.x > MAX_X || newPos.y > MAX_Y) {
+      return cur;
+    } else {
+      return newPos;
+    }
+  }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (/^Arrow.*$/.test(e.key)) {
+      e.preventDefault();
+      let dir = e.key.replace("Arrow", "").toLowerCase() as Dir;
+      pos = movePos(pos, dir);
+    }
+  }
 </script>
 
+<svelte:window on:keydown={onKeyDown} />
 <div class="grid">
   {#each nodes as node}
     <div
@@ -31,9 +56,9 @@
     grid-template-columns: repeat(20, 1fr);
     grid-template-rows: repeat(20, 1fr);
     align-content: center;
-    justify-content: center;
-    align-items: center;
-    justify-items: center;
+    justify-content: space-evenly;
+    align-items: stretch;
+    justify-items: stretch;
   }
 
   .active {
